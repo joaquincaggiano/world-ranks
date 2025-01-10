@@ -8,7 +8,7 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <main className="flex-grow flex flex-col overflow-auto relative">
+    <main className="flex flex-col min-h-screen relative">
       <div className="relative">
         <Image
           src={LogoWorldRanked}

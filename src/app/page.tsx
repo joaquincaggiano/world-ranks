@@ -1,8 +1,24 @@
 import { getCountries } from "@/actions/countries";
 import Home from "@/components/home/Home";
+import { CountriesResponse } from "@/interfaces/responses";
 
-export default async function HomePage() {
-  const countries = (await getCountries()) ?? [];
+type SearchParams = Promise<{ page: string, search: string }>;
 
-  return <Home countries={countries} />;
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { page, search } = await searchParams;
+  const pageNumber = parseInt(page ?? "1", 10);
+  const response: CountriesResponse = await getCountries(search, pageNumber);
+  const { countries, totalCountries, totalPages } = response;
+
+  return (
+    <Home
+      countries={countries}
+      totalCountries={totalCountries}
+      totalPages={totalPages}
+    />
+  );
 }
