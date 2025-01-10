@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ArrowLeft from "../icons/ArrowLeft";
 import ArrowRight from "../icons/ArrowRight";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { createQuery } from "@/utils/createQueryString";
 
 interface Props {
   currentPage: number;
@@ -11,9 +13,21 @@ interface Props {
 }
 
 const Pagination = ({ currentPage, totalPages }: Props) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const [arrowLeftColor, setArrowLeftColor] = useState("white");
   const [arrowRightColor, setArrowRightColor] = useState("gray");
-  
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", "1");
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  }, [totalPages, currentPage, pathname, router, searchParams]);
+
   const generatePaginationNumbers = () => {
     const pages = [];
     if (totalPages <= 3) {
@@ -43,7 +57,7 @@ const Pagination = ({ currentPage, totalPages }: Props) => {
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
       <Link
-        href={`?page=${currentPage - 1}`}
+        href={pathname + "?" + createQuery(searchParams, "page", (currentPage - 1).toString())}
         className={`${currentPage === 1 && "pointer-events-none"}`}
         aria-disabled={currentPage === 1}
         onMouseEnter={() => setArrowLeftColor("gray")}
@@ -60,7 +74,7 @@ const Pagination = ({ currentPage, totalPages }: Props) => {
         ) : (
           <Link
             key={page}
-            href={`?page=${page}`}
+            href={pathname + "?" + createQuery(searchParams, "page", page.toString())}
             className={`${
               currentPage === page ? "text-white" : "text-gray"
             } font-medium p-2 hover:text-white`}
@@ -71,7 +85,7 @@ const Pagination = ({ currentPage, totalPages }: Props) => {
       )}
 
       <Link
-        href={`?page=${currentPage + 1}`}
+        href={pathname + "?" + createQuery(searchParams, "page", (currentPage + 1).toString())}
         className={`${currentPage === totalPages && "pointer-events-none"}`}
         aria-disabled={currentPage === totalPages}
         onMouseEnter={() => setArrowRightColor("gray")}

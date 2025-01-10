@@ -8,6 +8,7 @@ import Pagination from "../pagination/Pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Country } from "@prisma/client";
 import RegionButton from "../button/RegionButton";
+import { createQuery } from "@/utils/createQueryString";
 
 interface Props {
   countries: Country[];
@@ -29,14 +30,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (name === "regions") {
-        console.log("entra al clg");
-        params.delete("search");
-      }
-      params.set(name, value);
-
-      return params.toString();
+      return createQuery(searchParams, name, value);
     },
     [searchParams]
   );
@@ -46,7 +40,6 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
     let queryString = "";
 
     if (regions.includes(region)) {
-      // Remove the region and clean up any remaining commas
       const updatedRegions = regions
         .split(',')
         .filter(r => r && r !== region)
