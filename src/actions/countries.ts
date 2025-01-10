@@ -20,9 +20,9 @@ export const getCountries = async (
       where,
       skip: (page - 1) * 10,
       take: 10,
-      orderBy,
+      orderBy: orderBy ?? { name: "asc" },
     });
-    const totalCountries = countries.length;
+    const totalCountries = await prisma.country.count();
     const totalPages = Math.ceil(totalCountries / 10);
 
     return { countries, totalCountries, totalPages };

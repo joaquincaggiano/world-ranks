@@ -2,7 +2,7 @@ import { getCountries } from "@/actions/countries";
 import Home from "@/components/home/Home";
 import { CountriesResponse } from "@/interfaces/responses";
 
-type SearchParams = Promise<{ page: string, search: string }>;
+type SearchParams = Promise<{ page: string; search: string }>;
 
 export default async function HomePage({
   searchParams,
@@ -15,10 +15,10 @@ export default async function HomePage({
   const { countries, totalCountries, totalPages } = response;
 
   return (
-    <Home
-      countries={countries}
-      totalCountries={totalCountries}
-      totalPages={totalPages}
-    />
+      <Home
+        countries={countries}
+        totalCountries={totalCountries}
+        totalPages={totalPages}
+      />
   );
 }

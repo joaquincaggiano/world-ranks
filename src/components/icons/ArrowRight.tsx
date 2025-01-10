@@ -13,7 +13,7 @@ const ArrowRight = ({ width = 24, height = 24, color = "#000000" }: Props) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect width="24" height="24" fill="white" />
+      <rect width="24" height="24" fill="#1B1D1F" />
       <path
         d="M6 12H18M18 12L13 7M18 12L13 17"
         stroke={color}

@@ -1,15 +1,19 @@
+"use client";
+
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import ArrowLeft from "../icons/ArrowLeft";
 import ArrowRight from "../icons/ArrowRight";
 
 interface Props {
   currentPage: number;
   totalPages: number;
-  search: string;
 }
 
-const Pagination = ({ currentPage, totalPages, search }: Props) => {
+const Pagination = ({ currentPage, totalPages }: Props) => {
+  const [arrowLeftColor, setArrowLeftColor] = useState("white");
+  const [arrowRightColor, setArrowRightColor] = useState("gray");
+  
   const generatePaginationNumbers = () => {
     const pages = [];
     if (totalPages <= 3) {
@@ -39,29 +43,27 @@ const Pagination = ({ currentPage, totalPages, search }: Props) => {
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
       <Link
-        href={`?search=${search}&page=${currentPage - 1}`}
-        className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${
-          currentPage === 1 ? "pointer-events-none opacity-50" : ""
-        }`}
+        href={`?page=${currentPage - 1}`}
+        className={`${currentPage === 1 && "pointer-events-none"}`}
         aria-disabled={currentPage === 1}
+        onMouseEnter={() => setArrowLeftColor("gray")}
+        onMouseLeave={() => setArrowLeftColor("white")}
       >
-        <ArrowLeft />
+        <ArrowLeft color={currentPage === 1 ? "gray" : arrowLeftColor} />
       </Link>
 
       {generatePaginationNumbers().map((page, index) =>
         page === "..." ? (
-          <span key={`ellipsis-${index}`} className="px-4 py-2">
+          <span key={`ellipsis-${index}`} className="p-2">
             ...
           </span>
         ) : (
           <Link
             key={page}
-            href={`?search=${search}&page=${page}`}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              currentPage === page
-                ? "bg-gray-900 text-white"
-                : "hover:bg-gray-100"
-            }`}
+            href={`?page=${page}`}
+            className={`${
+              currentPage === page ? "text-white" : "text-gray"
+            } font-medium p-2 hover:text-white`}
           >
             {page}
           </Link>
@@ -69,13 +71,15 @@ const Pagination = ({ currentPage, totalPages, search }: Props) => {
       )}
 
       <Link
-        href={`?search=${search}&page=${currentPage + 1}`}
-        className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${
-          currentPage === totalPages ? "pointer-events-none opacity-50" : ""
-        }`}
+        href={`?page=${currentPage + 1}`}
+        className={`${currentPage === totalPages && "pointer-events-none"}`}
         aria-disabled={currentPage === totalPages}
+        onMouseEnter={() => setArrowRightColor("gray")}
+        onMouseLeave={() => setArrowRightColor("white")}
       >
-        <ArrowRight />
+        <ArrowRight
+          color={currentPage === totalPages ? "gray" : arrowRightColor}
+        />
       </Link>
     </div>
   );

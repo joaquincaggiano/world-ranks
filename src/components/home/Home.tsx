@@ -15,7 +15,6 @@ interface Props {
 const Home = ({ countries, totalCountries, totalPages }: Props) => {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
-  const search = searchParams.get("search") || "all";
 
   // const [isLoading, setIsLoading] = useState<boolean>(false);
   // const [countries, setCountries] = useState<Country[]>(initialCountries);
@@ -134,7 +133,15 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
         {/* Table */}
         <div className="w-full">
           <div className="flex flex-col gap-5">
-            <Table columns={["Flag", "Name", "Population", "Area", "Region"]}>
+            <Table
+              columns={[
+                "Flag",
+                "Name",
+                "Population",
+                "Area (km²)",
+                "Region",
+              ]}
+            >
               {countries.map((country) => (
                 <tr key={country.name} className="hover:bg-gray-50">
                   <td className="py-4">
@@ -163,7 +170,6 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
             <Pagination
               currentPage={page}
               totalPages={totalPages}
-              search={search}
             />
           </div>
         </div>
