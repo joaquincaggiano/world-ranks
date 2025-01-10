@@ -1,20 +1,33 @@
 "use server";
 
-import { Country } from "@/interfaces/country";
+import { prisma } from "../../prisma/db";
 
-export const getCountries = async (path: string = "all", page: number = 1) => {
+export const getCountries = async (
+  page: number = 1,
+  where?: {
+    name?:string
+    region?: string;
+    subregion?: string;
+  },
+  orderBy?: {
+    name?: "asc";
+    population?: "asc";
+    area?: "asc";
+  }
+) => {
   try {
-    const response = await fetch(`https://restcountries.com/v3.1/${path}`);
-    const data: Country[] = await response.json();
+    const countries = await prisma.country.findMany({
+      where,
+      skip: (page - 1) * 10,
+      take: 10,
+      orderBy,
+    });
+    const totalCountries = countries.length;
+    const totalPages = Math.ceil(totalCountries / 10);
 
-    const startIndex = (page - 1) * 10;
-    const endIndex = startIndex + 10;
-    const countries = data.slice(startIndex, endIndex);
-    const totalPages = Math.ceil(data.length / 10);
-
-    return {countries, totalCountries: data.length, totalPages};
+    return { countries, totalCountries, totalPages };
   } catch (error) {
     console.error(error);
-    return {countries: [], totalCountries: 0, totalPages: 0};
+    return { countries: [], totalCountries: 0, totalPages: 0 };
   }
 };

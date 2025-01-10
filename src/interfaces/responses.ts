@@ -1,4 +1,4 @@
-import { Country } from "./country";
+import { Country } from "@prisma/client";
 
 export interface CountriesResponse {
   countries: Country[];

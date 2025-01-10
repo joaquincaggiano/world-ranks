@@ -1,10 +1,10 @@
 "use client";
 import SearchSvg from "../icons/SearchSvg";
-import { Country } from "@/interfaces/country";
 import Table from "../table/Table";
 import Image from "next/image";
 import Pagination from "../pagination/Pagination";
 import { useSearchParams } from "next/navigation";
+import { Country } from "@prisma/client";
 
 interface Props {
   countries: Country[];
@@ -136,18 +136,18 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
           <div className="flex flex-col gap-5">
             <Table columns={["Flag", "Name", "Population", "Area", "Region"]}>
               {countries.map((country) => (
-                <tr key={country.name.common} className="hover:bg-gray-50">
+                <tr key={country.name} className="hover:bg-gray-50">
                   <td className="py-4">
                     <Image
-                      src={country.flags.png}
-                      alt={`Flag of ${country.name.common}`}
+                      src={country.flag}
+                      alt={`Flag of ${country.name}`}
                       width={100}
                       height={100}
                       className="object-cover rounded-sm"
                     />
                   </td>
                   <td className="py-4 font-medium text-sm">
-                    {country.name.common}
+                    {country.name}
                   </td>
                   <td className="py-4 font-medium text-sm">
                     {country.population.toLocaleString()}

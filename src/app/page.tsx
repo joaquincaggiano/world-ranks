@@ -9,9 +9,9 @@ export default async function HomePage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { page, search } = await searchParams;
+  const { page } = await searchParams;
   const pageNumber = parseInt(page ?? "1", 10);
-  const response: CountriesResponse = await getCountries(search, pageNumber);
+  const response: CountriesResponse = await getCountries(pageNumber);
   const { countries, totalCountries, totalPages } = response;
 
   return (
