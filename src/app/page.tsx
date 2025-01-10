@@ -6,6 +6,7 @@ type SearchParams = Promise<{
   page: string;
   orderBy: "name" | "population" | "area";
   search: string;
+  regions: string;
 }>;
 
 export default async function HomePage({
@@ -13,12 +14,13 @@ export default async function HomePage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { page, orderBy, search } = await searchParams;
+  const { page, orderBy, search, regions } = await searchParams;
   const pageNumber = parseInt(page ?? "1", 10);
   const response: CountriesResponse = await getCountries(
     pageNumber,
     orderBy,
-    search
+    search,
+    regions ? regions.split(",") : []
   );
   const { countries, totalCountries, totalPages } = response;
 

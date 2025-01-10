@@ -1,11 +1,13 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import SearchSvg from "../icons/SearchSvg";
 import Table from "../table/Table";
 import Image from "next/image";
 import Pagination from "../pagination/Pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Country } from "@prisma/client";
+import RegionButton from "../button/RegionButton";
 
 interface Props {
   countries: Country[];
@@ -14,16 +16,24 @@ interface Props {
 }
 
 const Home = ({ countries, totalCountries, totalPages }: Props) => {
+  const isRegionChange = useRef(false);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
+  const regions = searchParams.get("regions") || "";
 
   const [search, setSearch] = useState<string>("");
+  const [regionsSelected, setRegionsSelected] = useState<string[]>([]);
+  // const [isRegionChange, setIsRegionChange] = useState(false);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
+      if (name === "regions") {
+        console.log("entra al clg");
+        params.delete("search");
+      }
       params.set(name, value);
 
       return params.toString();
@@ -31,43 +41,41 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
     [searchParams]
   );
 
+  const handleRegionClick = (region: string) => {
+    isRegionChange.current = true;
+    let queryString = "";
+
+    if (regions.includes(region)) {
+      // Remove the region and clean up any remaining commas
+      const updatedRegions = regions
+        .split(',')
+        .filter(r => r && r !== region)
+        .join(',');
+
+      setRegionsSelected(regionsSelected.filter((r) => r !== region));
+      queryString = createQueryString("regions", updatedRegions);
+    } else {
+      setRegionsSelected([...regionsSelected, region]);
+      const newRegions = regions ? `${regions},${region}` : region;
+      queryString = createQueryString("regions", newRegions);
+    }
+
+    router.push(pathname + "?" + queryString);
+  };
+
   useEffect(() => {
+    if (isRegionChange.current) {
+      isRegionChange.current = false;
+      return;
+    }
+
     const timeoutId = setTimeout(() => {
-      if (search) {
-        const queryString = createQueryString("search", search);
-        router.push(pathname + "?" + queryString);
-      }
+      const queryString = createQueryString("search", search);
+      router.push(pathname + "?" + queryString);
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timeoutId);
   }, [search, createQueryString, pathname, router]);
-
-  // const [regionsSelected, setRegionsSelected] = useState<string[]>([]);
-
-  // const handleRegionClick = async (region: string) => {
-  //   try {
-  //     setIsLoading(true);
-  //     if (regionsSelected.includes(region)) {
-  //       setRegionsSelected(regionsSelected.filter((r) => r !== region));
-  //       setCountries(countries.filter((country) => country.region !== region));
-  //     } else {
-  //       const response: CountriesResponse = await getCountries(
-  //         `region/${region}`
-  //       );
-  //       const { countries: newCountries, totalCountries: newTotalCountries } =
-  //         response;
-  //       if (newCountries.length > 0) {
-  //         setRegionsSelected([...regionsSelected, region]);
-  //         setCountries((prevCountries) => [...prevCountries, ...newCountries]);
-  //         setTotalCountries(newTotalCountries);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error handling region click:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   return (
     <div className="flex flex-col w-full">
@@ -115,7 +123,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
           </div>
 
           {/* Region */}
-          {/* <div className="flex flex-col gap-2 w-full max-w-[250px]">
+          <div className="flex flex-col gap-2 w-full max-w-[250px]">
             <span className="text-white text-xs font-medium">Region</span>
             <div className="flex flex-wrap gap-2">
               <RegionButton
@@ -144,7 +152,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
                 setRegion={handleRegionClick}
               />
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* Table */}
