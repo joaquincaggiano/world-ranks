@@ -1,30 +1,40 @@
 "use server";
 
+// import { revalidatePath } from "next/cache";
 import { prisma } from "../../prisma/db";
 
 export const getCountries = async (
   page: number = 1,
-  where?: {
-    name?:string
-    region?: string;
-    subregion?: string;
-  },
-  orderBy?: {
-    name?: "asc";
-    population?: "asc";
-    area?: "asc";
-  }
+  orderBy: "name" | "population" | "area" = "name",
+  search: string = "",
 ) => {
   try {
     const countries = await prisma.country.findMany({
-      where,
+      where: {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { region: { contains: search, mode: "insensitive" } },
+          { subregion: { contains: search, mode: "insensitive" } }
+        ]
+      },
       skip: (page - 1) * 10,
       take: 10,
-      orderBy: orderBy ?? { name: "asc" },
+      orderBy: {
+        [orderBy]: "asc",
+      },
     });
-    const totalCountries = await prisma.country.count();
+    const totalCountries = await prisma.country.count({
+      where: {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { region: { contains: search, mode: "insensitive" } },
+          { subregion: { contains: search, mode: "insensitive" } }
+        ]
+      }
+    });
     const totalPages = Math.ceil(totalCountries / 10);
 
+    // revalidatePath("/");
     return { countries, totalCountries, totalPages };
   } catch (error) {
     console.error(error);

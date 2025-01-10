@@ -1,9 +1,10 @@
 "use client";
+import { useCallback, useEffect, useState } from "react";
 import SearchSvg from "../icons/SearchSvg";
 import Table from "../table/Table";
 import Image from "next/image";
 import Pagination from "../pagination/Pagination";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Country } from "@prisma/client";
 
 interface Props {
@@ -13,33 +14,35 @@ interface Props {
 }
 
 const Home = ({ countries, totalCountries, totalPages }: Props) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [countries, setCountries] = useState<Country[]>(initialCountries);
-  // const [totalCountries, setTotalCountries] = useState<number>(
-  //   initialTotalCountries
-  // );
-  // const [totalPages, setTotalPages] = useState<number>(initialTotalPages);
-  // const [page, setPage] = useState<number>(1);
-  // const [search, setSearch] = useState<string>("all");
-  // const [regionsSelected, setRegionsSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState<string>("");
 
-  // useEffect(() => {
-  //   const fetchCountries = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const countries = await getCountries(search);
-  //       setCountries(countries);
-  //     } catch (error) {
-  //       console.error(error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   fetchCountries();
-  // }, [search]);
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (search) {
+        const queryString = createQueryString("search", search);
+        router.push(pathname + "?" + queryString);
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [search, createQueryString, pathname, router]);
+
+  // const [regionsSelected, setRegionsSelected] = useState<string[]>([]);
 
   // const handleRegionClick = async (region: string) => {
   //   try {
@@ -80,6 +83,8 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
             type="text"
             placeholder="Search by name, region or subregion"
             className="bg-transparent outline-none font-medium text-sm w-[300px]"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
@@ -90,11 +95,23 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
           {/* Sort by name, population or area */}
           <div className="flex flex-col gap-2 w-full">
             <span className="text-white text-xs font-medium">Sort by</span>
-            <select className="bg-transparent border-2 border-dark2 rounded-xl p-2 font-medium text-sm w-full max-w-[250px]">
-              <option value="name">Name</option>
-              <option value="population">Population</option>
-              <option value="area">Area</option>
-            </select>
+            <div className="flex items-center gap-2 border-2 border-dark2 rounded-xl p-2 font-medium text-sm w-full max-w-[250px]">
+              <select
+                className="bg-transparent w-full"
+                onChange={(e) => {
+                  const queryString = createQueryString(
+                    "orderBy",
+                    e.target.value
+                  );
+                  router.push(pathname + "?" + queryString);
+                }}
+              >
+                <option value="name">Name</option>
+                <option value="population">Population</option>
+                <option value="area">Area</option>
+              </select>
+              <div />
+            </div>
           </div>
 
           {/* Region */}
@@ -134,13 +151,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
         <div className="w-full">
           <div className="flex flex-col gap-5">
             <Table
-              columns={[
-                "Flag",
-                "Name",
-                "Population",
-                "Area (km²)",
-                "Region",
-              ]}
+              columns={["Flag", "Name", "Population", "Area (km²)", "Region"]}
             >
               {countries.map((country) => (
                 <tr key={country.name} className="hover:bg-gray-50">
@@ -153,9 +164,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
                       className="object-cover rounded-sm"
                     />
                   </td>
-                  <td className="py-4 font-medium text-sm">
-                    {country.name}
-                  </td>
+                  <td className="py-4 font-medium text-sm">{country.name}</td>
                   <td className="py-4 font-medium text-sm">
                     {country.population.toLocaleString()}
                   </td>
@@ -167,10 +176,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
               ))}
             </Table>
 
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-            />
+            <Pagination currentPage={page} totalPages={totalPages} />
           </div>
         </div>
       </div>
