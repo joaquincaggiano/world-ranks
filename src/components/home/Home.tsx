@@ -41,9 +41,9 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
 
     if (regions.includes(region)) {
       const updatedRegions = regions
-        .split(',')
-        .filter(r => r && r !== region)
-        .join(',');
+        .split(",")
+        .filter((r) => r && r !== region)
+        .join(",");
 
       setRegionsSelected(regionsSelected.filter((r) => r !== region));
       queryString = createQueryString("regions", updatedRegions);
@@ -155,7 +155,11 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
               columns={["Flag", "Name", "Population", "Area (km²)", "Region"]}
             >
               {countries.map((country) => (
-                <tr key={country.name} className="hover:bg-gray-50">
+                <tr
+                  key={country.name}
+                  className="cursor-pointer hover:bg-gray"
+                  onClick={() => router.push(`/country/${country.id}`)}
+                >
                   <td className="py-4">
                     <Image
                       src={country.flag}

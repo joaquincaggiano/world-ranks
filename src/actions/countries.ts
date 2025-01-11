@@ -1,6 +1,5 @@
 "use server";
 
-// import { revalidatePath } from "next/cache";
 import { prisma } from "../../prisma/db";
 import { Prisma } from "@prisma/client";
 
@@ -47,5 +46,17 @@ export const getCountries = async (
   } catch (error) {
     console.error(error);
     return { countries: [], totalCountries: 0, totalPages: 0 };
+  }
+};
+
+export const getCountryById = async (id: string) => {
+  try {
+    const country = await prisma.country.findUnique({
+      where: { id },
+    });
+
+    return country;
+  } catch (error) {
+    console.log(error)
   }
 };
