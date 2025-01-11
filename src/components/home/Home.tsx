@@ -157,7 +157,7 @@ const Home = ({ countries, totalCountries, totalPages }: Props) => {
               {countries.map((country) => (
                 <tr
                   key={country.name}
-                  className="cursor-pointer hover:bg-gray"
+                  className="cursor-pointer hover:bg-dark2"
                   onClick={() => router.push(`/country/${country.id}`)}
                 >
                   <td className="py-4">
