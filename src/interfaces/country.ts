@@ -118,3 +118,8 @@ export interface PostalCode {
   format: string;
   regex: string;
 }
+
+export interface BorderData {
+  name: string;
+  flag: string;
+}
