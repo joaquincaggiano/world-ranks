@@ -63,8 +63,8 @@ const CountryDetail = ({ country, borders }: Props) => {
             value={country.currencies.join(", ")}
           />
 
-          <div className="flex flex-col gap-5 p-5 border-[1px] border-dark2 font-medium">
-            <p className="text-sm font-normal">Neighbouring Countries</p>
+          <div className="flex flex-col gap-5 p-5 border-[1px] border-dark2">
+            <p className="text-sm font-medium">Neighbouring Countries</p>
             <div className="flex flex-wrap gap-5 items-center">
               {borders.map((border) => (
                 <div
@@ -78,7 +78,7 @@ const CountryDetail = ({ country, borders }: Props) => {
                     height={50}
                     className="rounded-sm object-cover w-full"
                   />
-                  <p className="text-sm font-medium">{border.name}</p>
+                  <p className="text-sm font-normal">{border.name}</p>
                 </div>
               ))}
             </div>
