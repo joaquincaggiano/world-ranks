@@ -9,8 +9,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "World Ranked",
-  description: "App to see the world ranked",
+  title: "World Ranks",
+  description: "App to see the world ranks",
 };
 
 export default function RootLayout({
