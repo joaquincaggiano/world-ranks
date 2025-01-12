@@ -11,7 +11,7 @@ const Table = ({ columns, children }: Props) => {
         <tr>
           {columns.map((column) => (
             <th
-              className="text-left pb-3 border-b font-medium text-sm text-gray"
+              className="text-left pb-3 border-b border-dark2 font-medium text-sm text-gray"
               key={column}
             >
               {column}

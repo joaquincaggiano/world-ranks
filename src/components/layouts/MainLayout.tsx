@@ -11,9 +11,9 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const pathname = usePathname();
-  console.log(pathname);
+
   return (
-    <main className="flex flex-col min-h-screen relative">
+    <main className="flex flex-col min-h-screen">
       <div className="relative">
         <Image
           src={LogoWorldRanked}
@@ -25,14 +25,18 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <LogoSvg />
         </div>
       </div>
-      <div className="flex-grow min-h-screen bg-dark" />
-
       <div
-        className={`absolute top-[10%] sm:top-[12%] lg:top-[16%] xl:top-[25%] left-0 right-0 rounded-xl border-[1px] border-dark2 shadow-sm flex flex-col ${
-          pathname.includes("country") ? "w-[50%]" : "w-[90%] py-5 px-8"
-        } mx-auto text-white bg-dark`}
+        className={`flex-grow min-h-screen bg-dark ${
+          pathname.includes("country") ? "p-20" : "p-10"
+        }`}
       >
-        {children}
+        <div
+          className={`rounded-xl border-[1px] border-dark2 shadow-sm flex flex-col ${
+            pathname.includes("country") ? "w-[50%]" : "w-[100%] py-5 px-8"
+          } mx-auto text-white bg-dark`}
+        >
+          {children}
+        </div>
       </div>
     </main>
   );
