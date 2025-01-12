@@ -4,14 +4,29 @@ import { Country } from "@prisma/client";
 import Image from "next/image";
 import CardCountryInfo from "../card/CardCountryInfo";
 import { BorderData } from "@/interfaces/country";
+import ArrowLeft from "../icons/ArrowLeft";
+import Link from "next/link";
+import { useState } from "react";
 
 interface Props {
   country: Country;
   borders: BorderData[];
 }
 const CountryDetail = ({ country, borders }: Props) => {
+  const [mouseOver, setMouseOver] = useState(false);
   return (
     <div className="flex flex-col w-full relative">
+      <Link
+        href="/"
+        className={`absolute top-5 left-5 ${
+          mouseOver ? "bg-white" : "bg-dark2"
+        } rounded-full p-2`}
+        onMouseOver={() => setMouseOver(true)}
+        onMouseLeave={() => setMouseOver(false)}
+      >
+        <ArrowLeft width={20} height={20} color={mouseOver ? "#282B30" : "#FFF"} />
+      </Link>
+
       <div className="absolute top-[-40px] left-1/2 transform -translate-x-1/2">
         <Image
           src={country.flag}
